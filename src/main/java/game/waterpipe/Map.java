@@ -52,22 +52,26 @@ public class Map {
     };
 
     private int[][] pipes;
+    private int[][] fixedPipes;
 
     public Map(int level) {
         this.level = level;
         if(level == 1){
             pipes = pipes1Arr;
+            fixedPipes = fixedPipe1;
             SIZE = 5;
         }
         else if(level == 2){
             pipes = pipes2Arr;
+            fixedPipes = fixedPipe2;
             SIZE = 7;
         }
         else if(level == 3){
             pipes = pipes3Arr;
+            fixedPipes = fixedPipe2;
             SIZE = 7;
         }
-        RandomMap(pipes);
+        //Random(pipe);
     }
 
     private void RandomMap(int[][] pipes){
@@ -87,19 +91,48 @@ public class Map {
         }
     }
 
+    private void RandomPipe(Pipe[][] pipe){
+        Random rand = new Random();
+        int[] n = {rand.nextInt(17), rand.nextInt(17), rand.nextInt(17), rand.nextInt(17)};
+        int count = 0;
+        for(int k = 0; k < 4; k++){  // define 4 random pos for STATIC
+            count = 0;
+            for(int i = 0; i < SIZE; i++){
+                for(int j = 0; j < SIZE; j++){
+                    if(pipe[i][j].getNum() != 0 && pipe[i][j].getNum() <= 6){
+                        count++;
+                    }
+                    if(count == n[k]){
+                        pipe[i][j].setNum(fixedPipes[i][j]);
+                        pipe[i][j].setState(Pipe.pipeState.STATIC);
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i < SIZE; i++){
+            for(int j = 0; j < SIZE; j++){
+                if(pipe[i][j].getNum() == 0 && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
+                    pipe[i][j].setNum(rand.nextInt(7));
+                }
+                else if((pipe[i][j].getNum() == 1 || pipe[i][j].getNum() == 2) && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
+                    pipe[i][j].setNum(rand.nextInt(2)+1);
+                }
+                else if(pipe[i][j].getNum() >= 3 && pipe[i][j].getNum() <= 6 && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
+                    pipe[i][j].setNum(rand.nextInt(4)+3);
+                }
+            }
+        }
+
+    }
 
 
     public void fillPipes(Pipe[][] pipe) {
         for(int i = 0; i < SIZE; i++){
             for(int j = 0; j < SIZE; j++){
-                System.out.print(pipes[i][j] + " ");
-            }
-            System.out.println();
-        }
-        for(int i = 0; i < SIZE; i++){
-            for(int j = 0; j < SIZE; j++){
                 pipe[i][j] = new Pipe(pipes[i][j]);
             }
         }
+        RandomPipe(pipe);
     }
 }

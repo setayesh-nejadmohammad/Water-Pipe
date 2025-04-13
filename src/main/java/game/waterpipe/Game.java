@@ -2,7 +2,9 @@ package game.waterpipe;
 
 import javafx.animation.RotateTransition;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,10 +19,16 @@ public class Game {
     private int level;
     private static Image icon;
     private static Image backgroundImage;
+    private static Image home;
+    private static Image play;
+    private static Image undo;
+    private static Image restart;
+    private static Image nextLevel;
     private static int CELL_SIZE = HelloApplication.CELL_SIZE;
     private static int SCENE_WIDTH = HelloApplication.SCENE_WIDTH;
     private static int SCENE_HEIGHT = HelloApplication.SCENE_HEIGHT;
-    private int moves = 5;
+    private int moves = 15;
+    final int[] moveArr = {moves};
     int SIZE = 5;
 
 
@@ -28,6 +36,11 @@ public class Game {
         this.level = level;
         this.icon = loadImage("pics/water-pipe.png");
         this.backgroundImage = loadImage("pics/background.png");
+        this.home = loadImage("pics/home.png");
+        this.play = loadImage("pics/play.png");
+        this.undo = loadImage("pics/undo.png");
+        this.restart = loadImage("pics/restart.png");
+        this.nextLevel = loadImage("pics/next level.png");
     }
 
 
@@ -91,15 +104,152 @@ public class Game {
             }
         }
 
-        Pipe[][] pipe=new Pipe[10][10];
+        Pipe[][] pipe = new Pipe[10][10];
         Map map = new Map(level);
         map.fillPipes(pipe);
 
-        final int[] moveArr = {moves};
+
         Label moveChange = new Label("Moves : " + moveArr[0]+ "");
         final Label[] moveLabelArr = {moveChange};
-        moveLabelArr[0].setLayoutX(270);
-        moveLabelArr[0].setLayoutY(50);
+        moveLabelArr[0].setLayoutX(400);
+        moveLabelArr[0].setLayoutY(40);
+        moveLabelArr[0].getStyleClass().add("text");
+
+        MovePipe(grid, pipe, moveLabelArr, stage);
+
+
+        if(level == 2) pane.getChildren().addAll(moveLabelArr[0]);
+
+        pane.getChildren().addAll(grid);
+        Scene scene = new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        sideButtons(scene, stage, pane, pipe, grid, moveLabelArr);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void sideButtons(Scene scene, Stage stage, Pane pane, Pipe[][] pipe, GridPane grid, Label[] moveLabelArr) {
+        int ICON_SIZE = 50;
+        ImageView homeView = new ImageView(home);
+        homeView.setFitHeight(ICON_SIZE); homeView.setFitWidth(ICON_SIZE);
+        ImageView playView = new ImageView(play);
+        playView.setFitHeight(ICON_SIZE); playView.setFitWidth(ICON_SIZE);
+        ImageView undoView = new ImageView(undo);
+        undoView.setFitHeight(ICON_SIZE); undoView.setFitWidth(ICON_SIZE);
+        ImageView restartView = new ImageView(restart);
+        restartView.setFitHeight(ICON_SIZE); restartView.setFitWidth(ICON_SIZE);
+        ImageView nextLevelView = new ImageView(nextLevel);
+        nextLevelView.setFitHeight(ICON_SIZE); nextLevelView.setFitWidth(ICON_SIZE);
+
+        Button HomeButton = new Button();
+        Button PlayButton = new Button();
+        Button UndoButton = new Button();
+        Button RestartButton = new Button();
+        Button NextLevelButton = new Button();
+
+        HomeButton.getStyleClass().add("button");
+        PlayButton.getStyleClass().add("button");
+        UndoButton.getStyleClass().add("button");
+        RestartButton.getStyleClass().add("button");
+        NextLevelButton.getStyleClass().add("button");
+
+        HomeButton.setGraphic(homeView);
+        PlayButton.setGraphic(playView);
+        UndoButton.setGraphic(undoView);
+        RestartButton.setGraphic(restartView);
+        NextLevelButton.setGraphic(nextLevelView);
+
+        Stage gameResult = new Stage(); // This is for play button and the result widow
+        NextLevelButton.setOnAction(event ->{
+            if(level == 1){
+                Game game = new Game(2);
+                game.DrawStage(stage);
+                gameResult.close();
+            }
+            else if(level == 2){
+                Game game = new Game(3);
+                game.DrawStage(stage);
+                gameResult.close();
+            }
+        });
+
+        HomeButton.setOnAction(event -> {
+            chooseLevel chonenlevel = new chooseLevel(stage);
+            chonenlevel.DrawStage();
+        });
+
+        PlayButton.setOnAction(event -> {
+            WayCheck gameCheck = new WayCheck(pipe, level);
+            boolean result = gameCheck.stupidCheck();
+
+
+            Label label;
+            VBox root = new VBox();
+            Scene gameResultScene;
+            gameResult.setTitle("Game Result");
+
+
+            if(result){
+                label = new Label("YOU WIN!");
+                gameResultScene = new Scene(root, 400, 200, Color.LIGHTBLUE);
+                root.setStyle("-fx-background-color: green;");
+                root.getChildren().add(label);
+                root.getChildren().add(NextLevelButton);
+            }
+            else{
+                label = new Label("GAME OVER!");
+                gameResultScene = new Scene(root, 400, 200, Color.RED);
+                root.setStyle("-fx-background-color: red;");
+                root.getChildren().add(label);
+            }
+
+            root.setAlignment(Pos.CENTER);
+            root.setSpacing(20);
+            label.getStyleClass().add("text");
+            label.setStyle("-fx-text-fill: white;");
+
+            gameResultScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            gameResult.setScene(gameResultScene);
+            gameResult.show();
+        });
+
+        RestartButton.setOnAction(event -> {
+            Map map = new Map(level);
+            map.fillPipes(pipe);
+            MovePipe(grid, pipe, moveLabelArr, stage);
+        });
+
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(HomeButton, PlayButton, UndoButton, RestartButton);
+        hbox.setPadding(new Insets(20));
+        hbox.setSpacing(6);
+        pane.getChildren().add(hbox);
+    }
+
+    private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage) {
+        moveArr[0] = moves;
+        moveLabelArr[0].setText("Moves : " + (moveArr[0]));
+        // Clean the grid
+        for(int row = 0; row < SIZE; row++){
+            for(int col = 0; col < SIZE; col++){
+                final int finalCol = col;
+                final int finalRow = row;
+                grid.getChildren().removeIf(node ->
+                        GridPane.getColumnIndex(node) == finalCol && GridPane.getRowIndex(node) == finalRow
+                );
+            }
+        }
+
+        // Create 5x5 grid of squares
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE);
+                rect.setFill(null);
+                rect.setStroke(Color.BLACK);
+                rect.setStrokeWidth(1);
+                grid.add(rect, col, row);
+            }
+        }
 
         // Put Stupid pipe pics in grid  + Manage pipes movements
         for (int row = 0; row < SIZE; row++) {
@@ -109,7 +259,7 @@ public class Game {
                     pipeView.setFitHeight(CELL_SIZE);
                     pipeView.setFitWidth(CELL_SIZE);
 
-                    if (row == 0 && col == 0 || col == SIZE - 1 && row == SIZE - 1) {
+                    if (row == 0 && col == 0 || col == SIZE - 1 && row == SIZE - 1 || pipe[row][col].getState() == Pipe.pipeState.STATIC) {
                         grid.add(pipeView, col, row);
                         continue;
                     }
@@ -124,7 +274,6 @@ public class Game {
                     final int c = col;
 
                     pipeView.setOnMouseClicked(event -> {
-                        System.out.println("Mouse Clicked!");
                         if (level == 2) moveArr[0] -= 1;
                         moveLabelArr[0].setText("Moves : " + (moveArr[0]));
                         if (moveArr[0] == -1) {
@@ -149,18 +298,36 @@ public class Game {
                         rt.setByAngle(rotationAngle); // Rotate by 90 degrees
                         rt.setCycleCount(1);
 
+                        rt.setOnFinished(e -> {
+                            pipeView.setDisable(false);
+                        });
+
 
                         rt.play(); // Start the animation
+
+                        // Update the pipe array
+                        if (pipe[r][c].getNum() == 1) {
+                            pipe[r][c].setNum(2);
+                        } else if (pipe[r][c].getNum() == 2) {
+                            pipe[r][c].setNum(1);
+                        } else if (pipe[r][c].getNum() == 3) {
+                            if (rotationAngle == 90) pipe[r][c].setNum(4);
+                            else pipe[r][c].setNum(6);
+                        } else if (pipe[r][c].getNum() == 4) {
+                            if (rotationAngle == 90) pipe[r][c].setNum(5);
+                            else pipe[r][c].setNum(3);
+                        } else if (pipe[r][c].getNum() == 5) {
+                            if (rotationAngle == 90) pipe[r][c].setNum(6);
+                            else pipe[r][c].setNum(4);
+                        } else if (pipe[r][c].getNum() == 6) {
+                            if (rotationAngle == 90) pipe[r][c].setNum(3);
+                            else pipe[r][c].setNum(5);
+                        }
                     });
                     grid.add(pipeView, col, row);
                 }
 
             }
         }
-
-        pane.getChildren().addAll(grid);
-        Scene scene = new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT);
-        stage.setScene(scene);
-        stage.show();
     }
 }
