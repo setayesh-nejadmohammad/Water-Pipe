@@ -10,6 +10,7 @@ module game.waterpipe {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens game.waterpipe to javafx.fxml;
     exports game.waterpipe;

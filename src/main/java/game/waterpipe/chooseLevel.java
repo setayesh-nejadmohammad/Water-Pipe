@@ -19,13 +19,13 @@ public class chooseLevel {
     private static Image level1;
     private static Image level2;
     private static Image level3;
-    private static int SCENE_SIZE;
     private static String cssPath;
     private static int width = HelloApplication.SCENE_WIDTH;
     private static int height = HelloApplication.SCENE_HEIGHT;
+    private Stage stage;
 
-    public chooseLevel() {
-
+    public chooseLevel(Stage stage) {
+        this.stage = stage;
         this.icon = loadImage("pics/water-pipe.png");
         this.backgroundImage = loadImage("pics/background.png");
         this.level1 = loadImage("pics/level1.png");
@@ -44,12 +44,13 @@ public class chooseLevel {
     }
 
     public void DrawStage(){     // this will return level num
-        Stage stageChooseLevel = new Stage();
-        stageChooseLevel.getIcons().add(icon);
-        stageChooseLevel.setTitle("Water Pipe");
-        stageChooseLevel.setResizable(false);
+        //Stage stageChooseLevel = new Stage();
+        stage.getIcons().add(icon);
+        stage.setTitle("Water Pipe");
+        stage.setResizable(false);
         int[] levels = new int[2];
-        levels[0] = 0;
+        int level = 0;
+        levels[0] = level;
 
         BackgroundImage bgImage = new BackgroundImage(
                 backgroundImage,
@@ -62,9 +63,7 @@ public class chooseLevel {
         Label label = new Label("Choose Level :");
         label.getStyleClass().add("text");
 
-        // .................................... BUTTONS SET ....................................
-
-
+        // ................................. BUTTONS SET ....................................
         ImageView level1view = new ImageView(level1);
         ImageView level2view = new ImageView(level2);
         ImageView level3view = new ImageView(level3);
@@ -83,23 +82,28 @@ public class chooseLevel {
         button1.setOnAction(e -> {
             //startGame(1);
             levels[0] = 1;
-            stageChooseLevel.close();
+            //stage.close();
+            Game game = new Game(1);
+            game.DrawStage(stage);
         });
         button2.setOnAction(e -> {
             //startGame(2);
             levels[0] = 2;
-            stageChooseLevel.close();
+            //stageChooseLevel.close();
+            Game game = new Game(2);
+            game.DrawStage(stage);
         });
         button3.setOnAction(e -> {
             //startGame(3);
             levels[0] = 3;
-            stageChooseLevel.close();
+            //stageChooseLevel.close();
+            Game game = new Game(3);
+            game.DrawStage(stage);
         });
 
         HBox buttonsLayout = new HBox(10);
         buttonsLayout.setAlignment(Pos.CENTER);
         buttonsLayout.getChildren().addAll(button1, button2, button3);
-
         //...............................................................................................
 
         VBox layout = new VBox(20);
@@ -113,9 +117,9 @@ public class chooseLevel {
 
         Scene scene1 = new Scene(layout, width, height);
         scene1.getStylesheets().add(cssPath);
-        stageChooseLevel.setScene(scene1);
-        stageChooseLevel.show();
-        //return levels[0];
+        stage.setScene(scene1);
+        stage.show();
+        System.out.println(levels[0]);
     }
 
 }
