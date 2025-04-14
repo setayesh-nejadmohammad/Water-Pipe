@@ -21,6 +21,7 @@ public class Pipe {
     public Image staticPipe4 = loadImage("pics/static pipe4.png");
     public Image staticPipe5 = loadImage("pics/static pipe5.png");
     public Image staticPipe6 = loadImage("pics/static pipe6.png");
+    int rotateAngle = 0;
 
     public Pipe(int num){
         this.num = num;
@@ -101,4 +102,6 @@ public class Pipe {
     public void setState(pipeState state){
         this.state = state;
     }
+
+
 }

@@ -70,6 +70,9 @@ public class limits {
         updateTimerLabel();
         timeline.play();
     }
+    public void TimeStop(){
+        timeline.stop();
+    }
 
     private void updateTimerLabel() {
         timerLabel.setText("Time: " + timeSeconds);

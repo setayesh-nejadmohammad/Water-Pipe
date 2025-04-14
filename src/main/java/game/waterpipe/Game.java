@@ -15,6 +15,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Stack;
+
 public class Game {
     private int level;
     private static Image icon;
@@ -31,6 +33,14 @@ public class Game {
     final int[] moveArr = {moves};
     int SIZE = 5;
     limits limit = new limits();
+    int[] x = new int[3];
+    int[] y = new int[3];
+    int[] rotate = new int[3];
+    int[] undoCount = {0};
+    int ICON_SIZE = 50;
+    Button UndoButton = new Button();
+    private final Stack<int[]> moveHistory = new Stack<>(); // to store [row, col, previousNum]
+    private final Stack<Integer> rotationHistory = new Stack<>(); // to store rotate
 
     public Game(int level) {
         this.level = level;
@@ -115,8 +125,6 @@ public class Game {
         moveLabelArr[0].setLayoutY(40);
         moveLabelArr[0].getStyleClass().add("text");
 
-        MovePipe(grid, pipe, moveLabelArr, stage, pane);
-
         if(level == 2) pane.getChildren().addAll(moveLabelArr[0]);
         if(level == 3) limit.TimeLimit(stage, pane);
 
@@ -124,12 +132,12 @@ public class Game {
         Scene scene = new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         sideButtons(scene, stage, pane, pipe, grid, moveLabelArr);
+        MovePipe(grid, pipe, moveLabelArr, stage, pane, scene);
         stage.setScene(scene);
         stage.show();
     }
 
     private void sideButtons(Scene scene, Stage stage, Pane pane, Pipe[][] pipe, GridPane grid, Label[] moveLabelArr) {
-        int ICON_SIZE = 50;
         ImageView homeView = new ImageView(home);
         homeView.setFitHeight(ICON_SIZE); homeView.setFitWidth(ICON_SIZE);
         ImageView playView = new ImageView(play);
@@ -143,7 +151,7 @@ public class Game {
 
         Button HomeButton = new Button();
         Button PlayButton = new Button();
-        Button UndoButton = new Button();
+        //Button UndoButton = new Button();
         Button RestartButton = new Button();
         Button NextLevelButton = new Button();
 
@@ -181,7 +189,7 @@ public class Game {
         PlayButton.setOnAction(event -> {
             WayCheck gameCheck = new WayCheck(pipe, level);
             boolean result = gameCheck.stupidCheck();
-
+            limit.TimeStop();
 
             Label label;
             VBox root = new VBox();
@@ -217,17 +225,90 @@ public class Game {
             limit.resetTimer();
             Map map = new Map(level);
             map.fillPipes(pipe);
-            MovePipe(grid, pipe, moveLabelArr, stage, pane);
+            MovePipe(grid, pipe, moveLabelArr, stage, pane, scene);
         });
 
+        /*UndoButton.setOnAction(event -> {
+            if(undoCount[0] > 0) undoCount[0]--;
+            ImageView pipeView = new ImageView(pipe[x[undoCount[0]]][y[undoCount[0]]].getImage());
+            pipeView.setFitHeight(CELL_SIZE);
+            pipeView.setFitWidth(CELL_SIZE);
+
+            // Create rotation animation
+            RotateTransition rt = new RotateTransition(Duration.millis(300), pipeView);
+            rt.setByAngle(rotate[1]*(-1)); // Rotate by 90 degrees
+            rt.setCycleCount(1);
+
+            rt.setOnFinished(e -> {
+                pipeView.setDisable(false);
+            });
+
+            rt.play();
+            grid.getChildren().removeIf(node ->
+                    GridPane.getColumnIndex(node) == y[undoCount[0]] && GridPane.getRowIndex(node) == x[undoCount[0]]
+            );
+            grid.add(pipeView, y[undoCount[0]], x[undoCount[0]]);
+            Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE);
+            rect.setFill(null);
+            rect.setStroke(Color.BLACK);
+            rect.setStrokeWidth(1);
+            grid.add(rect, y[undoCount[0]], x[undoCount[0]]);
+
+            rt.setOnFinished(e -> {
+                pipeView.setDisable(false);
+            });
+        });*/
+
         HBox hbox = new HBox();
-        hbox.getChildren().addAll(HomeButton, PlayButton, UndoButton, RestartButton);
+        hbox.getChildren().addAll(HomeButton, PlayButton, RestartButton, UndoButton);
         hbox.setPadding(new Insets(20));
         hbox.setSpacing(6);
         pane.getChildren().add(hbox);
     }
 
-    private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage, Pane pane) {
+    private void Undo(ImageView pipeView, GridPane grid, Pipe[][] pipe, Pane pane, Scene scene) {
+        ImageView undoView = new ImageView(undo);
+        undoView.setFitHeight(ICON_SIZE); undoView.setFitWidth(ICON_SIZE);
+        Button UndoButton = new Button();
+        UndoButton.getStyleClass().add("button");
+        UndoButton.setGraphic(undoView);
+        pipeView = new ImageView(pipe[x[undoCount[0]]][y[undoCount[0]]].getImage());
+        final ImageView finalPipeView = pipeView;
+        UndoButton.setOnAction(event -> {
+            if(undoCount[0] > 0) undoCount[0]--;
+            finalPipeView.setFitHeight(CELL_SIZE);
+            finalPipeView.setFitWidth(CELL_SIZE);
+
+            // Create rotation animation
+            RotateTransition rt = new RotateTransition(Duration.millis(300), finalPipeView);
+            rt.setByAngle(rotate[1]*(-1)); // Rotate by 90 degrees
+            rt.setCycleCount(1);
+
+            rt.setOnFinished(e -> {
+                finalPipeView.setDisable(false);
+            });
+
+            rt.play();
+            grid.getChildren().removeIf(node ->
+                    GridPane.getColumnIndex(node) == y[undoCount[0]] && GridPane.getRowIndex(node) == x[undoCount[0]]
+            );
+            grid.add(finalPipeView, y[undoCount[0]], x[undoCount[0]]);
+            Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE);
+            rect.setFill(null);
+            rect.setStroke(Color.BLACK);
+            rect.setStrokeWidth(1);
+            grid.add(rect, y[undoCount[0]], x[undoCount[0]]);
+
+            rt.setOnFinished(e -> {
+                finalPipeView.setDisable(false);
+            });
+        });
+        UndoButton.setLayoutX(170);
+        UndoButton.setLayoutY(20);
+        pane.getChildren().add(UndoButton);
+    }
+
+    private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage, Pane pane, Scene scene) {
         moveArr[0] = moves;
         moveLabelArr[0].setText("Moves : " + (moveArr[0]));
 
@@ -252,7 +333,6 @@ public class Game {
                 grid.add(rect, col, row);
             }
         }
-
         // Put Stupid pipe pics in grid  + Manage pipes movements
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
@@ -275,7 +355,10 @@ public class Game {
                     final int r = row;
                     final int c = col;
 
+                    //Undo(pipeView, grid, pipe, pane, scene);
+
                     pipeView.setOnMouseClicked(event -> {
+
                         if (level == 2) moveArr[0] -= 1;
                         moveLabelArr[0].setText("Moves : " + (moveArr[0]));
                         if (moveArr[0] == -1) {
@@ -288,11 +371,37 @@ public class Game {
                         // Disable during animation to prevent spam clicks
                         pipeView.setDisable(true);
 
+                        moveHistory.push(new int[]{r, c, pipe[r][c].getNum()});
+                        rotationHistory.push(pipe[r][c].rotateAngle);
+
+
                         // Determine rotation direction based on mouse button
                         int rotationAngle = 90;
                         if (event.getButton() == MouseButton.SECONDARY) {
                             rotationAngle = -90; // Rotate counter-clockwise for right click
                         }
+                        pipe[r][c].rotateAngle = rotationAngle;
+
+                        undoCount[0]++;
+                        if(undoCount[0] == 1){ //
+                            x[0] = r;
+                            y[0] = c;
+                            rotate[0] = rotationAngle;
+                        }
+                        else if(undoCount[0] == 2){
+                            x[1] = r;
+                            y[1] = c;
+                            rotate[1] = rotationAngle;
+                        }
+                        else if(undoCount[0] == 3){
+                            x[0] = x[1];
+                            y[0] = y[1];
+                            x[1] = r;
+                            y[1] = c;
+                            rotate[0] = rotate[1];
+                            rotate[1] = rotationAngle;
+                            undoCount[0] = 2;
+                        };
 
 
                         // Create rotation animation
@@ -326,10 +435,128 @@ public class Game {
                             else pipe[r][c].setNum(5);
                         }
                     });
+                    UndoButton.setOnAction(event -> {
+                        if(moveHistory.size() > 2){
+                            moveHistory.remove(0);
+                        }
+                        undoMove(pipe, grid, stage, moveLabelArr);
+                    });
                     grid.add(pipeView, col, row);
                 }
 
             }
+        }
+    }
+    private void undoMove(Pipe[][] pipe, GridPane grid, Stage stage, Label[] moveLabelArr) {
+        if (!moveHistory.isEmpty() && moveHistory.size() <= 2) {
+            int[] lastMove = moveHistory.pop();
+            int lastRotation = rotationHistory.pop();
+
+            int row = lastMove[0];
+            int col = lastMove[1];
+            int previousNum = lastMove[2];
+
+            // return to the previous version
+            pipe[row][col].setNum(previousNum);
+
+            // update pipe pics
+            grid.getChildren().removeIf(node ->
+                    GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row
+                            && node instanceof ImageView
+            );
+
+            ImageView pipeView = new ImageView(pipe[row][col].getImage());
+            pipeView.setFitHeight(CELL_SIZE);
+            pipeView.setFitWidth(CELL_SIZE);
+
+            // if the pipes are not STATIC keep the rotation ability
+            if (!(row == 0 && col == 0 || col == SIZE - 1 && row == SIZE - 1 || pipe[row][col].getState() == Pipe.pipeState.STATIC)) {
+                pipeView.setStyle("-fx-cursor: hand;");
+                final int r = row;
+                final int c = col;
+                pipeView.setOnMouseClicked(event -> {
+                    if (level == 2) moveArr[0] -= 1;
+                    moveLabelArr[0].setText("Moves : " + (moveArr[0]));
+                    if (moveArr[0] == -1) {
+                        limits noMoves = new limits();
+                        noMoves.outOfMoves();
+                        stage.close();
+                    }
+                    //System.out.println("moves: " + moveArr[0]);
+
+                    // Disable during animation to prevent spam clicks
+                    pipeView.setDisable(true);
+
+                    // Make pipes more interactive
+                    pipeView.setStyle("-fx-cursor: hand;");
+                    pipeView.setOnMouseEntered(e -> pipeView.setStyle("-fx-effect: dropshadow(gaussian, #1598ec, 15, 0.7, 0, 0); -fx-cursor: hand;"));
+                    pipeView.setOnMouseExited(e -> pipeView.setStyle("-fx-effect: null; -fx-cursor: hand;"));
+
+
+                    // Determine rotation direction based on mouse button
+                    int rotationAngle = 90;
+                    if (event.getButton() == MouseButton.SECONDARY) {
+                        rotationAngle = -90; // Rotate counter-clockwise for right click
+                    }
+
+                    undoCount[0]++;
+                    if(undoCount[0] == 1){ //
+                        x[0] = r;
+                        y[0] = c;
+                        rotate[0] = rotationAngle;
+                    }
+                    else if(undoCount[0] == 2){
+                        x[1] = r;
+                        y[1] = c;
+                        rotate[1] = rotationAngle;
+                    }
+                    else if(undoCount[0] == 3){
+                        x[0] = x[1];
+                        y[0] = y[1];
+                        x[1] = r;
+                        y[1] = c;
+                        rotate[0] = rotate[1];
+                        rotate[1] = rotationAngle;
+                        undoCount[0] = 2;
+                    };
+
+
+                    // Create rotation animation
+                    RotateTransition rt = new RotateTransition(Duration.millis(300), pipeView);
+                    rt.setByAngle(rotationAngle); // Rotate by 90 degrees
+                    rt.setCycleCount(1);
+
+                    rt.setOnFinished(e -> {
+                        pipeView.setDisable(false);
+                    });
+
+
+                    rt.play(); // Start the animation
+
+                    // Update the pipe array
+                    if (pipe[r][c].getNum() == 1) {
+                        pipe[r][c].setNum(2);
+                    } else if (pipe[r][c].getNum() == 2) {
+                        pipe[r][c].setNum(1);
+                    } else if (pipe[r][c].getNum() == 3) {
+                        if (rotationAngle == 90) pipe[r][c].setNum(4);
+                        else pipe[r][c].setNum(6);
+                    } else if (pipe[r][c].getNum() == 4) {
+                        if (rotationAngle == 90) pipe[r][c].setNum(5);
+                        else pipe[r][c].setNum(3);
+                    } else if (pipe[r][c].getNum() == 5) {
+                        if (rotationAngle == 90) pipe[r][c].setNum(6);
+                        else pipe[r][c].setNum(4);
+                    } else if (pipe[r][c].getNum() == 6) {
+                        if (rotationAngle == 90) pipe[r][c].setNum(3);
+                        else pipe[r][c].setNum(5);
+                    }
+                });
+            }
+            grid.add(pipeView, col, row);
+
+            moveArr[0]++; // add moves
+            moveLabelArr[0].setText("Moves : " + (moveArr[0]));
         }
     }
 }
