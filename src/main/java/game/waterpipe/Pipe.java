@@ -14,6 +14,7 @@ public class Pipe {
     public Image pipe6 = loadImage("pics/pipe6.png");
     public Image pipe7 = loadImage("pics/pipe7.png");
     public Image pipe8 = loadImage("pics/pipe8.png");
+    public Image pipe9 = loadImage("pics/pipe9.png");
     public Image staticPipe1 = loadImage("pics/static pipe1.png");
     public Image staticPipe2 = loadImage("pics/static pipe2.png");
     public Image staticPipe3 = loadImage("pics/static pipe3.png");
@@ -76,6 +77,9 @@ public class Pipe {
         }
         else if(num == 8){
             return pipe8;
+        }
+        else if(num == 9){
+            return pipe9;
         }
         return null;
     }

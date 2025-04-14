@@ -30,7 +30,7 @@ public class Game {
     private int moves = 15;
     final int[] moveArr = {moves};
     int SIZE = 5;
-
+    limits limit = new limits();
 
     public Game(int level) {
         this.level = level;
@@ -115,10 +115,10 @@ public class Game {
         moveLabelArr[0].setLayoutY(40);
         moveLabelArr[0].getStyleClass().add("text");
 
-        MovePipe(grid, pipe, moveLabelArr, stage);
-
+        MovePipe(grid, pipe, moveLabelArr, stage, pane);
 
         if(level == 2) pane.getChildren().addAll(moveLabelArr[0]);
+        if(level == 3) limit.TimeLimit(stage, pane);
 
         pane.getChildren().addAll(grid);
         Scene scene = new Scene(pane, SCENE_WIDTH, SCENE_HEIGHT);
@@ -214,9 +214,10 @@ public class Game {
         });
 
         RestartButton.setOnAction(event -> {
+            limit.resetTimer();
             Map map = new Map(level);
             map.fillPipes(pipe);
-            MovePipe(grid, pipe, moveLabelArr, stage);
+            MovePipe(grid, pipe, moveLabelArr, stage, pane);
         });
 
         HBox hbox = new HBox();
@@ -226,9 +227,10 @@ public class Game {
         pane.getChildren().add(hbox);
     }
 
-    private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage) {
+    private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage, Pane pane) {
         moveArr[0] = moves;
         moveLabelArr[0].setText("Moves : " + (moveArr[0]));
+
         // Clean the grid
         for(int row = 0; row < SIZE; row++){
             for(int col = 0; col < SIZE; col++){

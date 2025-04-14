@@ -7,48 +7,48 @@ public class Map {
     int SIZE = 5;
 
     private int[][] pipes1Arr = {
-            {7, 0, 0, 0, 0},
+            {8, 0, 0, 0, 0},
             {6, 1, 1, 3, 0},
             {5, 1, 2, 4, 0},
             {1, 0, 0, 0, 0},
-            {4, 2, 1, 1, 8}
+            {4, 2, 1, 1, 9}
     };
     private int[][] pipes2Arr = {
-            {7, 0, 0, 0, 0, 0, 0},
+            {8, 0, 0, 0, 0, 0, 0},
             {2, 0, 0, 0, 0, 0, 0},
             {2, 0, 0, 0, 0, 0, 0},
             {4, 1, 2, 1, 6, 0, 0},
             {0, 3, 1, 2, 4, 0, 0},
             {0, 1, 0, 0, 0, 0, 0},
-            {0, 4, 2, 1, 2, 1, 8}
+            {0, 4, 2, 1, 2, 1, 9}
     };
 
     private int[][] pipes3Arr = {
-            {7, 0, 0, 0, 0, 0, 0},
+            {8, 0, 0, 0, 0, 0, 0},
             {2, 0, 0, 0, 0, 0, 0},
             {2, 0, 0, 0, 0, 0, 0},
             {4, 1, 2, 1, 6, 0, 0},
             {0, 3, 1, 2, 4, 0, 0},
             {0, 1, 0, 0, 0, 0, 0},
-            {0, 4, 2, 1, 2, 1, 8}
+            {0, 4, 2, 1, 2, 1, 9}
     };
 
     private int[][] fixedPipe1 = {
-            {7, 0, 0, 0, 0},
+            {8, 0, 0, 0, 0},
             {3, 2, 2, 5, 0},
             {4, 2, 2, 6, 0},
             {1, 0, 0, 0, 0},
-            {3, 2, 2, 2, 8}
+            {3, 2, 2, 2, 9}
     };
 
     private int[][] fixedPipe2 = {
-            {7, 0, 0, 0, 0, 0, 0},
+            {8, 0, 0, 0, 0, 0, 0},
             {1, 0, 0, 0, 0, 0, 0},
             {1, 0, 0, 0, 0, 0, 0},
             {3, 2, 2, 2, 5, 0, 0},
             {0, 4, 2, 2, 6, 0, 0},
             {0, 1, 0, 0, 0, 0, 0},
-            {0, 4, 2, 2, 2, 2, 8}
+            {0, 4, 2, 2, 2, 2, 9}
     };
 
     private int[][] pipes;
@@ -74,23 +74,6 @@ public class Map {
         //Random(pipe);
     }
 
-    private void RandomMap(int[][] pipes){
-        for(int i = 0; i < SIZE; i++){
-            for(int j = 0; j < SIZE; j++){
-                Random rand = new Random();
-                if(pipes[i][j] == 0){
-                    pipes[i][j] = rand.nextInt(7);
-                }
-                else if(pipes[i][j] == 1 || pipes[i][j] == 2){
-                    pipes[i][j] = rand.nextInt(2)+1;
-                }
-                else if(pipes[i][j] >= 3 && pipes[i][j] <= 6){
-                    pipes[i][j] = rand.nextInt(4)+3;
-                }
-            }
-        }
-    }
-
     private void RandomPipe(Pipe[][] pipe){
         Random rand = new Random();
         int[] n = {rand.nextInt(17), rand.nextInt(17), rand.nextInt(17), rand.nextInt(17)};
@@ -113,7 +96,8 @@ public class Map {
         for(int i = 0; i < SIZE; i++){
             for(int j = 0; j < SIZE; j++){
                 if(pipe[i][j].getNum() == 0 && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
-                    pipe[i][j].setNum(rand.nextInt(7));
+                    if(level == 3) pipe[i][j].setNum(rand.nextInt(8));
+                    else pipe[i][j].setNum(rand.nextInt(7));
                 }
                 else if((pipe[i][j].getNum() == 1 || pipe[i][j].getNum() == 2) && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
                     pipe[i][j].setNum(rand.nextInt(2)+1);
