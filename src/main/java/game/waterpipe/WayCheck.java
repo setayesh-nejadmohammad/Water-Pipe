@@ -9,7 +9,7 @@ public class WayCheck {
     }
 
     public boolean stupidCheck(){
-        boolean result = true; // برنده میشه مگر اینکه خلافش ثلبت شه
+        boolean result = true; // برنده میشه مگر اینکه خلافش ثابت شه :)
         if(level == 1){
             if(pipe[1][0].getNum() != 3 ||
                     pipe[1][1].getNum() != 2 ||

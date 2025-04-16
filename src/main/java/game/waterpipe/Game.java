@@ -33,14 +33,11 @@ public class Game {
     final int[] moveArr = {moves};
     int SIZE = 5;
     limits limit = new limits();
-    int[] x = new int[3];
-    int[] y = new int[3];
-    int[] rotate = new int[3];
-    int[] undoCount = {0};
     int ICON_SIZE = 50;
     Button UndoButton = new Button();
     private final Stack<int[]> moveHistory = new Stack<>(); // to store [row, col, previousNum]
     private final Stack<Integer> rotationHistory = new Stack<>(); // to store rotate
+
 
     public Game(int level) {
         this.level = level;
@@ -228,84 +225,11 @@ public class Game {
             MovePipe(grid, pipe, moveLabelArr, stage, pane, scene);
         });
 
-        /*UndoButton.setOnAction(event -> {
-            if(undoCount[0] > 0) undoCount[0]--;
-            ImageView pipeView = new ImageView(pipe[x[undoCount[0]]][y[undoCount[0]]].getImage());
-            pipeView.setFitHeight(CELL_SIZE);
-            pipeView.setFitWidth(CELL_SIZE);
-
-            // Create rotation animation
-            RotateTransition rt = new RotateTransition(Duration.millis(300), pipeView);
-            rt.setByAngle(rotate[1]*(-1)); // Rotate by 90 degrees
-            rt.setCycleCount(1);
-
-            rt.setOnFinished(e -> {
-                pipeView.setDisable(false);
-            });
-
-            rt.play();
-            grid.getChildren().removeIf(node ->
-                    GridPane.getColumnIndex(node) == y[undoCount[0]] && GridPane.getRowIndex(node) == x[undoCount[0]]
-            );
-            grid.add(pipeView, y[undoCount[0]], x[undoCount[0]]);
-            Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE);
-            rect.setFill(null);
-            rect.setStroke(Color.BLACK);
-            rect.setStrokeWidth(1);
-            grid.add(rect, y[undoCount[0]], x[undoCount[0]]);
-
-            rt.setOnFinished(e -> {
-                pipeView.setDisable(false);
-            });
-        });*/
-
         HBox hbox = new HBox();
         hbox.getChildren().addAll(HomeButton, PlayButton, RestartButton, UndoButton);
         hbox.setPadding(new Insets(20));
         hbox.setSpacing(6);
         pane.getChildren().add(hbox);
-    }
-
-    private void Undo(ImageView pipeView, GridPane grid, Pipe[][] pipe, Pane pane, Scene scene) {
-        ImageView undoView = new ImageView(undo);
-        undoView.setFitHeight(ICON_SIZE); undoView.setFitWidth(ICON_SIZE);
-        Button UndoButton = new Button();
-        UndoButton.getStyleClass().add("button");
-        UndoButton.setGraphic(undoView);
-        pipeView = new ImageView(pipe[x[undoCount[0]]][y[undoCount[0]]].getImage());
-        final ImageView finalPipeView = pipeView;
-        UndoButton.setOnAction(event -> {
-            if(undoCount[0] > 0) undoCount[0]--;
-            finalPipeView.setFitHeight(CELL_SIZE);
-            finalPipeView.setFitWidth(CELL_SIZE);
-
-            // Create rotation animation
-            RotateTransition rt = new RotateTransition(Duration.millis(300), finalPipeView);
-            rt.setByAngle(rotate[1]*(-1)); // Rotate by 90 degrees
-            rt.setCycleCount(1);
-
-            rt.setOnFinished(e -> {
-                finalPipeView.setDisable(false);
-            });
-
-            rt.play();
-            grid.getChildren().removeIf(node ->
-                    GridPane.getColumnIndex(node) == y[undoCount[0]] && GridPane.getRowIndex(node) == x[undoCount[0]]
-            );
-            grid.add(finalPipeView, y[undoCount[0]], x[undoCount[0]]);
-            Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE);
-            rect.setFill(null);
-            rect.setStroke(Color.BLACK);
-            rect.setStrokeWidth(1);
-            grid.add(rect, y[undoCount[0]], x[undoCount[0]]);
-
-            rt.setOnFinished(e -> {
-                finalPipeView.setDisable(false);
-            });
-        });
-        UndoButton.setLayoutX(170);
-        UndoButton.setLayoutY(20);
-        pane.getChildren().add(UndoButton);
     }
 
     private void MovePipe(GridPane grid, Pipe[][] pipe, Label[] moveLabelArr, Stage stage, Pane pane, Scene scene) {
@@ -382,27 +306,6 @@ public class Game {
                         }
                         pipe[r][c].rotateAngle = rotationAngle;
 
-                        undoCount[0]++;
-                        if(undoCount[0] == 1){ //
-                            x[0] = r;
-                            y[0] = c;
-                            rotate[0] = rotationAngle;
-                        }
-                        else if(undoCount[0] == 2){
-                            x[1] = r;
-                            y[1] = c;
-                            rotate[1] = rotationAngle;
-                        }
-                        else if(undoCount[0] == 3){
-                            x[0] = x[1];
-                            y[0] = y[1];
-                            x[1] = r;
-                            y[1] = c;
-                            rotate[0] = rotate[1];
-                            rotate[1] = rotationAngle;
-                            undoCount[0] = 2;
-                        };
-
 
                         // Create rotation animation
                         RotateTransition rt = new RotateTransition(Duration.millis(300), pipeView);
@@ -447,6 +350,7 @@ public class Game {
             }
         }
     }
+
     private void undoMove(Pipe[][] pipe, GridPane grid, Stage stage, Label[] moveLabelArr) {
         if (!moveHistory.isEmpty() && moveHistory.size() <= 2) {
             int[] lastMove = moveHistory.pop();
@@ -498,28 +402,6 @@ public class Game {
                     if (event.getButton() == MouseButton.SECONDARY) {
                         rotationAngle = -90; // Rotate counter-clockwise for right click
                     }
-
-                    undoCount[0]++;
-                    if(undoCount[0] == 1){ //
-                        x[0] = r;
-                        y[0] = c;
-                        rotate[0] = rotationAngle;
-                    }
-                    else if(undoCount[0] == 2){
-                        x[1] = r;
-                        y[1] = c;
-                        rotate[1] = rotationAngle;
-                    }
-                    else if(undoCount[0] == 3){
-                        x[0] = x[1];
-                        y[0] = y[1];
-                        x[1] = r;
-                        y[1] = c;
-                        rotate[0] = rotate[1];
-                        rotate[1] = rotationAngle;
-                        undoCount[0] = 2;
-                    };
-
 
                     // Create rotation animation
                     RotateTransition rt = new RotateTransition(Duration.millis(300), pipeView);

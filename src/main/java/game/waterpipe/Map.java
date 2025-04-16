@@ -1,5 +1,6 @@
 package game.waterpipe;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Map {
@@ -23,15 +24,13 @@ public class Map {
             {0, 4, 2, 1, 2, 1, 9}
     };
 
-    private int[][] pipes3Arr = {
-            {8, 0, 0, 0, 0, 0, 0},
-            {2, 0, 0, 0, 0, 0, 0},
-            {2, 0, 0, 0, 0, 0, 0},
-            {4, 1, 2, 1, 6, 0, 0},
-            {0, 3, 1, 2, 4, 0, 0},
-            {0, 1, 0, 0, 0, 0, 0},
-            {0, 4, 2, 1, 2, 1, 9}
-    };
+    private int[][] pipes3Arr = RandomWay.generateRandomWay();
+    private int[][] fixedPipe3 = new int[pipes3Arr.length][];
+    private void fillThe_fixedPipe3(){
+        for (int i = 0; i < pipes3Arr.length; i++) {
+            fixedPipe3[i] = Arrays.copyOf(pipes3Arr[i], pipes3Arr[i].length);
+        }
+    }
 
     private int[][] fixedPipe1 = {
             {8, 0, 0, 0, 0},
@@ -68,7 +67,8 @@ public class Map {
         }
         else if(level == 3){
             pipes = pipes3Arr;
-            fixedPipes = fixedPipe2;
+            fillThe_fixedPipe3();
+            fixedPipes = fixedPipe3;
             SIZE = 7;
         }
         //Random(pipe);
@@ -100,7 +100,13 @@ public class Map {
                     else pipe[i][j].setNum(rand.nextInt(7));
                 }
                 else if((pipe[i][j].getNum() == 1 || pipe[i][j].getNum() == 2) && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
-                    pipe[i][j].setNum(rand.nextInt(2)+1);
+                    if(level == 3) {
+                        int num = rand.nextInt(3);
+                        if(num == 0) pipe[i][j].setNum(1);
+                        else if(num == 1) pipe[i][j].setNum(2);
+                        else if(num == 2) pipe[i][j].setNum(7);
+                    }
+                    else  pipe[i][j].setNum(rand.nextInt(2)+1);
                 }
                 else if(pipe[i][j].getNum() >= 3 && pipe[i][j].getNum() <= 6 && pipe[i][j].getState() == Pipe.pipeState.MOVABLE){
                     pipe[i][j].setNum(rand.nextInt(4)+3);
@@ -117,6 +123,17 @@ public class Map {
                 pipe[i][j] = new Pipe(pipes[i][j]);
             }
         }
-        RandomPipe(pipe);
+        if(level == 1|| level == 2 || level == 3){
+            RandomPipe(pipe);
+        }
+
+        System.out.println("pipe");
+        for(int i = 0; i < SIZE; i++){
+            for(int j = 0; j < SIZE; j++){
+                System.out.print(pipe[i][j].getNum()+ " ");
+            }
+            System.out.println();
+        }
+        System.out.println("-------------");
     }
 }
