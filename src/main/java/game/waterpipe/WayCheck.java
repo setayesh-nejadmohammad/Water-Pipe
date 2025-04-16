@@ -46,4 +46,54 @@ public class WayCheck {
         }
         return result;
     }
+
+    public boolean SMARTcheck() {
+        System.out.println("SMARTcheck in ON!");
+        for(int i = 0; i < pipe.length; i++){
+            for(int j = 0; j < pipe[i].length; j++){
+                if(pipe[i][j] !=  null){
+                    System.out.print(pipe[i][j].getNum() + " ");
+                }
+            }
+            System.out.println();
+        }
+        boolean result = true;
+
+        // The start position
+        int x = 1;
+        int y = 0;
+
+        while(!(x == 6 && y == 6) && result){
+            //System.out.println("pipe[x][y] = "+pipe[x][y].getNum());
+            if(pipe[x-1][y].getNum() == 8 && pipe[x][y].getNum() != 3 && pipe[x][y].getNum() != 1 && pipe[x][y].getNum() != 7){
+                result = false;
+            }
+            else if(pipe[x][y] != null && pipe[x][y].getNum() == 1 || pipe[x][y].getNum() == 7){
+                if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7){
+                    result = false;
+                }
+                else x++;
+            }
+            else if(pipe[x][y] != null && pipe[x][y].getNum() == 2 || pipe[x][y].getNum() == 7){
+                if(y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
+                    result = false;
+                }
+                else y++;
+            }
+            else if(pipe[x][y].getNum() == 3){
+                if(y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
+                    result = false;
+                }
+                else y++;
+            }
+            else if(pipe[x][y].getNum() == 5){
+                if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7){
+                    result = false;
+                }
+                else x++;
+            }
+        }
+        System.out.println("The result is: " + result);
+        return result;
+    }
 }

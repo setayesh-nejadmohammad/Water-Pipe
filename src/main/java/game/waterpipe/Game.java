@@ -176,6 +176,11 @@ public class Game {
                 game.DrawStage(stage);
                 gameResult.close();
             }
+            else if(level == 3){
+                stage.close();
+                gameResult.close();
+                gameFinished();
+            }
         });
 
         HomeButton.setOnAction(event -> {
@@ -185,7 +190,13 @@ public class Game {
 
         PlayButton.setOnAction(event -> {
             WayCheck gameCheck = new WayCheck(pipe, level);
-            boolean result = gameCheck.stupidCheck();
+            boolean result = false;
+            if (level == 1 || level == 2) {
+                result = gameCheck.stupidCheck();
+            }
+            else if (level == 3) {
+                result = gameCheck.SMARTcheck();
+            }
             limit.TimeStop();
 
             Label label;
@@ -440,5 +451,20 @@ public class Game {
             moveArr[0]++; // add moves
             moveLabelArr[0].setText("Moves : " + (moveArr[0]));
         }
+    }
+
+    private void gameFinished(){
+        Stage lastStage = new Stage();
+        lastStage.setTitle("YOOOO HOOOO");
+        Label label = new Label("CONGRATS! YOU FINISHED THE GAME");
+        label.getStyleClass().add("text");
+        label.setStyle("-fx-text-fill: purple;");
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().add(label);
+        Scene lastScene = new Scene(root, 600, 200);
+        lastScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        lastStage.setScene(lastScene);
+        lastStage.show();
     }
 }

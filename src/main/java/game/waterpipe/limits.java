@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class limits {
-    public int timeSeconds = 30;
+    public int timeSeconds = 60;
     private Label timerLabel = new Label();
     Timeline timeline = new Timeline();
 
@@ -66,7 +66,7 @@ public class limits {
 
     public void resetTimer() {
         timeline.stop();
-        timeSeconds = 33;  // 3 Extera seconds because game has 3 sec delay for restart :/ i don't know why
+        timeSeconds = 63;  // 3 Extera seconds because game has 3 sec delay for restart :/ i don't know why
         updateTimerLabel();
         timeline.play();
     }

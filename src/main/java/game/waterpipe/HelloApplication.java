@@ -28,7 +28,6 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws Exception {
         chooseLevel chonenlevel = new chooseLevel(stage);
         chonenlevel.DrawStage();
-        // System.out.println(level);
     }
 
     public static void main(String[] args) {

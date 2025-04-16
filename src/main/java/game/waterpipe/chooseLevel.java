@@ -44,7 +44,6 @@ public class chooseLevel {
     }
 
     public void DrawStage(){     // this will return level num
-        //Stage stageChooseLevel = new Stage();
         stage.getIcons().add(icon);
         stage.setTitle("Water Pipe");
         stage.setResizable(false);
