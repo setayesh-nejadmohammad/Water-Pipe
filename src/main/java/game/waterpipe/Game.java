@@ -15,6 +15,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Game {
@@ -26,6 +28,8 @@ public class Game {
     private static Image undo;
     private static Image restart;
     private static Image nextLevel;
+    private static Image aiOff;
+    private static Image aiOn;
     private static int CELL_SIZE = HelloApplication.CELL_SIZE;
     private static int SCENE_WIDTH = HelloApplication.SCENE_WIDTH;
     private static int SCENE_HEIGHT = HelloApplication.SCENE_HEIGHT;
@@ -37,6 +41,7 @@ public class Game {
     Button UndoButton = new Button();
     private final Stack<int[]> moveHistory = new Stack<>(); // to store [row, col, previousNum]
     private final Stack<Integer> rotationHistory = new Stack<>(); // to store rotate
+    boolean[] isOn = {false}; // for aiButton
 
 
     public Game(int level) {
@@ -48,6 +53,8 @@ public class Game {
         this.undo = loadImage("pics/undo.png");
         this.restart = loadImage("pics/restart.png");
         this.nextLevel = loadImage("pics/next level.png");
+        this.aiOff = loadImage("pics/aiOff.png");
+        this.aiOn = loadImage("pics/aiOn.png");
     }
 
 
@@ -145,24 +152,33 @@ public class Game {
         restartView.setFitHeight(ICON_SIZE); restartView.setFitWidth(ICON_SIZE);
         ImageView nextLevelView = new ImageView(nextLevel);
         nextLevelView.setFitHeight(ICON_SIZE); nextLevelView.setFitWidth(ICON_SIZE);
+        ImageView aiOffView = new ImageView(aiOff);
+        aiOffView.setFitHeight(ICON_SIZE); aiOffView.setFitWidth(ICON_SIZE);
+        ImageView aiOnView = new ImageView(aiOn);
+        aiOnView.setFitHeight(ICON_SIZE); aiOnView.setFitWidth(ICON_SIZE);
+
+        isOn[0] = false;
 
         Button HomeButton = new Button();
         Button PlayButton = new Button();
         //Button UndoButton = new Button();
         Button RestartButton = new Button();
         Button NextLevelButton = new Button();
+        Button aiButton = new Button();
 
         HomeButton.getStyleClass().add("button");
         PlayButton.getStyleClass().add("button");
         UndoButton.getStyleClass().add("button");
         RestartButton.getStyleClass().add("button");
         NextLevelButton.getStyleClass().add("button");
+        aiButton.getStyleClass().add("button");
 
         HomeButton.setGraphic(homeView);
         PlayButton.setGraphic(playView);
         UndoButton.setGraphic(undoView);
         RestartButton.setGraphic(restartView);
         NextLevelButton.setGraphic(nextLevelView);
+        aiButton.setGraphic(aiOffView); // The default state for aiButton is being OFF
 
         Stage gameResult = new Stage(); // This is for play button and the result widow
         NextLevelButton.setOnAction(event ->{
@@ -236,8 +252,28 @@ public class Game {
             MovePipe(grid, pipe, moveLabelArr, stage, pane, scene);
         });
 
+        aiButton.setOnAction(event -> {
+
+            // Icon change for the aiButton state
+            if(isOn[0]){
+                isOn[0] = false;
+                aiButton.setGraphic(aiOffView);
+            }
+            else{
+                isOn[0] = true;
+                aiButton.setGraphic(aiOnView);
+            }
+
+            AiHelp help = new AiHelp(stage);
+            if(isOn[0]){
+                help.findWay(pipe, grid);
+            }
+        });
+
+
         HBox hbox = new HBox();
         hbox.getChildren().addAll(HomeButton, PlayButton, RestartButton, UndoButton);
+        if(level == 3) hbox.getChildren().addAll(aiButton);
         hbox.setPadding(new Insets(20));
         hbox.setSpacing(6);
         pane.getChildren().add(hbox);
@@ -293,7 +329,6 @@ public class Game {
                     //Undo(pipeView, grid, pipe, pane, scene);
 
                     pipeView.setOnMouseClicked(event -> {
-
                         if (level == 2) moveArr[0] -= 1;
                         moveLabelArr[0].setText("Moves : " + (moveArr[0]));
                         if (moveArr[0] == -1) {
@@ -347,6 +382,10 @@ public class Game {
                         } else if (pipe[r][c].getNum() == 6) {
                             if (rotationAngle == 90) pipe[r][c].setNum(3);
                             else pipe[r][c].setNum(5);
+                        }
+                        if(level == 3 && isOn[0]){
+                            AiHelp help = new AiHelp(stage);
+                            help.findWay(pipe, grid);
                         }
                     });
                     UndoButton.setOnAction(event -> {
