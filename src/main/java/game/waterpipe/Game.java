@@ -3,6 +3,7 @@ package game.waterpipe;
 import javafx.animation.RotateTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -246,6 +247,8 @@ public class Game {
         });
 
         RestartButton.setOnAction(event -> {
+            isOn[0] = false;
+            aiButton.setGraphic(aiOffView);
             limit.resetTimer();
             Map map = new Map(level);
             map.fillPipes(pipe);
@@ -258,6 +261,27 @@ public class Game {
             if(isOn[0]){
                 isOn[0] = false;
                 aiButton.setGraphic(aiOffView);
+                // ======================= Remove all rects in grid ================
+                List<Node> nodesToRemove = new ArrayList<>();
+                // find all Rectangles in grid
+                for (Node node : grid.getChildren()) {
+                    if (node instanceof Rectangle) {
+                        nodesToRemove.add(node);
+                    }
+                }
+                grid.getChildren().removeAll(nodesToRemove);
+                // =================================================================
+
+                // reDO the grid every time that findWay is called
+                for (int row = 0; row < SIZE; row++) {
+                    for (int col = 0; col < SIZE; col++) {
+                        Rectangle rect2 = new Rectangle(CELL_SIZE, CELL_SIZE);
+                        rect2.setFill(null);
+                        rect2.setStroke(Color.BLACK);
+                        rect2.setStrokeWidth(1);
+                        grid.add(rect2, col, row);
+                    }
+                }
             }
             else{
                 isOn[0] = true;

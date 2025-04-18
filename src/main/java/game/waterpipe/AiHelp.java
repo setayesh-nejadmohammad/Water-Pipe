@@ -94,6 +94,7 @@ public class AiHelp {
                         grid.add(rect, y+1, x);
                     }
                     result = false;
+                    break;
                 }
                 else if(pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7){
                     x++;
