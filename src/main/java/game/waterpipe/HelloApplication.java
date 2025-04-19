@@ -1,5 +1,4 @@
 package game.waterpipe;
-
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -22,14 +21,11 @@ public class HelloApplication extends Application {
     public static final int CELL_SIZE = 70; // Size of each square cell
     public static final int SCENE_WIDTH = 900;
     public static final int SCENE_HEIGHT = 700;
-    //Image icon = new Image(getClass().getResourceAsStream("/pics/water-pipe.png"));
-
     @Override
     public void start(Stage stage) throws Exception {
         chooseLevel chonenlevel = new chooseLevel(stage);
         chonenlevel.DrawStage();
     }
-
     public static void main(String[] args) {
         launch(args);
     }

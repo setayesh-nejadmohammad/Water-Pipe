@@ -79,23 +79,17 @@ public class chooseLevel {
         button3.getStyleClass().add("button");
 
         button1.setOnAction(e -> {
-            //startGame(1);
             levels[0] = 1;
-            //stage.close();
             Game game = new Game(1);
             game.DrawStage(stage);
         });
         button2.setOnAction(e -> {
-            //startGame(2);
             levels[0] = 2;
-            //stageChooseLevel.close();
             Game game = new Game(2);
             game.DrawStage(stage);
         });
         button3.setOnAction(e -> {
-            //startGame(3);
             levels[0] = 3;
-            //stageChooseLevel.close();
             Game game = new Game(3);
             game.DrawStage(stage);
         });
@@ -111,7 +105,6 @@ public class chooseLevel {
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(label, buttonsLayout);
-        //layout.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
 
         Scene scene1 = new Scene(layout, width, height);

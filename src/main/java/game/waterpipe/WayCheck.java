@@ -81,14 +81,20 @@ public class WayCheck {
                 else y++;
             }
             else if(pipe[x][y].getNum() == 7){
-                if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7
-                && y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
-                    result = false;
-                }
-                else if(pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7){
+                // ای لوله چهار طرفه ما را بیچاره کردی!
+                if(x+1<7 && (pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7)
+                && x-1>0 && (pipe[x-1][y].getNum() == 1 || pipe[x-1][y].getNum() == 5 || pipe[x-1][y].getNum() == 7)){
+                    // It's using the vertical direction
                     x++;
                 }
-                else y++;
+                else if(y+1<6 && (pipe[x][y+1].getNum() == 2 || pipe[x][y+1].getNum() == 5 || pipe[x][y+1].getNum() == 7 || pipe[x][y+1].getNum() == 9)
+                      && y-1>=0 && (pipe[x][y-1].getNum() == 2 || pipe[x][y-1].getNum() == 3|| pipe[x][y-1].getNum() == 7)){
+                    // It's using the horizontal direction
+                    y++;
+                }
+                else if((y==0 || x==6) && (pipe[x][y+1].getNum() == 2 || pipe[x][y+1].getNum() == 5 || pipe[x][y+1].getNum() == 7 || pipe[x][y+1].getNum() == 9)) y++;
+                else if((x==1 || y==5) && (pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7)) x++;
+                else result = false;
             }
             else if(pipe[x][y].getNum() == 3){
                 if(y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){

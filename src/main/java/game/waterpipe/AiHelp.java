@@ -1,13 +1,20 @@
 package game.waterpipe;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +72,7 @@ public class AiHelp {
             }
         }
 
-        while(!(x == 6 && y == 6) && result && pipe[x][y] != null){
+    while(!(x == 6 && y == 6) && result && pipe[x][y] != null){
             if(pipe[x-1][y].getNum() == 8 && pipe[x][y].getNum() != 3 && pipe[x][y].getNum() != 1 && pipe[x][y].getNum() != 7){
                 result = false;
                 grid.add(rect, y, x);
@@ -85,7 +92,30 @@ public class AiHelp {
                 else y++;
             }
             else if(pipe[x][y].getNum() == 7){
-                if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7
+                // ای لوله چهار طرفه ما را بیچاره کردی!
+                if(x+1<7 && (pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7)
+                && x-1>0 && (pipe[x-1][y].getNum() == 1 || pipe[x-1][y].getNum() == 5 || pipe[x-1][y].getNum() == 7)){
+                    // It's using the vertical direction
+                    x++;
+                }
+                else if(y+1<6 && (pipe[x][y+1].getNum() == 2 || pipe[x][y+1].getNum() == 5 || pipe[x][y+1].getNum() == 7)
+                        && y-1>=0 && (pipe[x][y-1].getNum() == 2 || pipe[x][y-1].getNum() == 3|| pipe[x][y-1].getNum() == 7)){
+                    // It's using the horizontal direction
+                    y++;
+                }
+                else if((y==0 || x==6) && (pipe[x][y+1].getNum() == 2 || pipe[x][y+1].getNum() == 5 || pipe[x][y+1].getNum() == 7 || pipe[x][y+1].getNum() == 9)) y++;
+                else if((x==1 || y==5) && (pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7)) x++;
+                else {
+                    result = false;
+                    if(x+1<7 && pipe[x+1][y].getNum() != 0){
+                        grid.add(rect, y, x+1);
+                    }
+                    else if(y+1<6 && pipe[x][y+1].getNum() != 0){
+                        grid.add(rect, y+1, x);
+                    }
+                }
+                //-------------------
+                /*if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7
                 && y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
                     if(x+1<7 && pipe[x+1][y].getNum() != 0){
                         grid.add(rect, y, x+1);
@@ -99,7 +129,7 @@ public class AiHelp {
                 else if(pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7){
                     x++;
                 }
-                else y++;
+                else y++;*/
             }
             else if(pipe[x][y].getNum() == 3){
                 if(y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
@@ -116,5 +146,25 @@ public class AiHelp {
                 else x++;
             }
         }
+        if(result){
+            YouAreAllSet();
+        }
+    }
+
+    public void YouAreAllSet(){
+        Image aiIcon = new Image(getClass().getResourceAsStream("pics/aiOff.png"));
+        Stage aiDoneStage = new Stage();
+        aiDoneStage.getIcons().add(aiIcon);
+        aiDoneStage.setTitle("AI is talking TO YOU!");
+        Label label = new Label("WHAT THE HELL YOU WANT ME FOR?\n just click the play button");
+        label.getStyleClass().add("text");
+        label.setStyle("-fx-text-fill: blue;");
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().add(label);
+        Scene lastScene = new Scene(root, 600, 200);
+        lastScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        aiDoneStage.setScene(lastScene);
+        aiDoneStage.show();
     }
 }
