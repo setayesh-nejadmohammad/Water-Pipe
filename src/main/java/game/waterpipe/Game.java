@@ -206,6 +206,11 @@ public class Game {
         });
 
         PlayButton.setOnAction(event -> {
+            Image winIcon = new Image(getClass().getResourceAsStream("pics/win.png"));
+            //ImageView iconView = new ImageView(winIcon);
+            Image loseIcon = new Image(getClass().getResourceAsStream("pics/cross.png"));
+            //ImageView loseView = new ImageView(loseIcon);
+
             WayCheck gameCheck = new WayCheck(pipe, level);
             boolean result = false;
             if (level == 1 || level == 2) {
@@ -228,12 +233,16 @@ public class Game {
                 root.setStyle("-fx-background-color: green;");
                 root.getChildren().add(label);
                 root.getChildren().add(NextLevelButton);
+                gameResult.getIcons().clear();
+                gameResult.getIcons().add(winIcon);
             }
             else{
                 label = new Label("GAME OVER!");
                 gameResultScene = new Scene(root, 400, 200, Color.RED);
                 root.setStyle("-fx-background-color: red;");
                 root.getChildren().add(label);
+                gameResult.getIcons().clear();
+                gameResult.getIcons().add(loseIcon);
             }
 
             root.setAlignment(Pos.CENTER);
@@ -518,6 +527,9 @@ public class Game {
 
     private void gameFinished(){
         Stage lastStage = new Stage();
+        Image partyImage = new Image(getClass().getResourceAsStream("pics/party.png"));
+        ImageView partyImageView = new ImageView(partyImage);
+        lastStage.getIcons().add(partyImage);
         lastStage.setTitle("YOOOO HOOOO");
         Label label = new Label("CONGRATS! YOU FINISHED THE GAME");
         label.getStyleClass().add("text");

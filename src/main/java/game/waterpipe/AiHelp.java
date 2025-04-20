@@ -114,22 +114,6 @@ public class AiHelp {
                         grid.add(rect, y+1, x);
                     }
                 }
-                //-------------------
-                /*if(x+1<7 && pipe[x+1][y].getNum() != 1 && pipe[x+1][y].getNum() != 3 && pipe[x+1][y].getNum() != 7
-                && y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
-                    if(x+1<7 && pipe[x+1][y].getNum() != 0){
-                        grid.add(rect, y, x+1);
-                    }
-                    else if(y+1<6 && pipe[x][y+1].getNum() != 0){
-                        grid.add(rect, y+1, x);
-                    }
-                    result = false;
-                    break;
-                }
-                else if(pipe[x+1][y].getNum() == 1 || pipe[x+1][y].getNum() == 3 || pipe[x+1][y].getNum() == 7){
-                    x++;
-                }
-                else y++;*/
             }
             else if(pipe[x][y].getNum() == 3){
                 if(y+1<6 && pipe[x][y+1].getNum() != 2 && pipe[x][y+1].getNum() != 5 && pipe[x][y+1].getNum() != 7){
@@ -156,7 +140,7 @@ public class AiHelp {
         Stage aiDoneStage = new Stage();
         aiDoneStage.getIcons().add(aiIcon);
         aiDoneStage.setTitle("AI is talking TO YOU!");
-        Label label = new Label("WHAT THE HELL YOU WANT ME FOR?\n just click the play button");
+        Label label = new Label("WHAT THE HELL YOU WANT ME FOR?\n           just click the play button");
         label.getStyleClass().add("text");
         label.setStyle("-fx-text-fill: blue;");
         VBox root = new VBox();
