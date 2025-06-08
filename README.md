@@ -12,7 +12,7 @@ no limits. just find the way!
 You have move limit. BE CAREFULL!
 ![level 2](https://github.com/setayesh-nejadmohammad/Water-Pipe/blob/5b9e100b88b67ea965197b3239d3a3d021748c1c/pics/Screenshot%20(143).png)
 
-### This is a proof that a way could found all the time :)
+### This is a proof that a way could be found everytime :)
 ![proof](https://github.com/setayesh-nejadmohammad/Water-Pipe/blob/5b9e100b88b67ea965197b3239d3a3d021748c1c/pics/Screenshot%20(144).png)
 
 ## Level 3
